@@ -62,12 +62,13 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        // Esto es CLAVE: Solo el dueño calcula movimiento y manda animaciones
         if (_photonView != null && !_photonView.IsMine) return;
-        if (_isDead) return; // Si murió, no hace nada más
+
+        if (_isDead) return;
 
         CalculateMovement();
 
-        // RESPAWN SÓLO SI CAE
         if (this.transform.position.y <= -8f)
         {
             Respawn();

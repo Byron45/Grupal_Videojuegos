@@ -120,7 +120,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b077db2e927c074498f4d192a1342d90,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1289074727117737675}
+      addedObject: {fileID: 4187162606412372205}
   m_SourcePrefab: {fileID: 100100000, guid: b077db2e927c074498f4d192a1342d90, type: 3}
 --- !u!1 &603159002204752586 stripped
 GameObject:
@@ -289,7 +289,7 @@ MonoBehaviour:
   observableSearch: 0
   ObservedComponents:
   - {fileID: 5747578140190695550}
-  - {fileID: 1289074727117737675}
+  - {fileID: 4187162606412372205}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -309,7 +309,7 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
---- !u!114 &1289074727117737675
+--- !u!114 &4187162606412372205
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -321,14 +321,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 0
+  ShowLayerWeightsInspector: 1
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: estaSaltando
   - Type: 1
-    SynchronizeType: 0
+    SynchronizeType: 1
     Name: velocidad
   m_SynchronizeLayers:
   - SynchronizeType: 0
