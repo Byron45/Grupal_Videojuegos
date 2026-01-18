@@ -15,7 +15,7 @@ public class Player : MonoBehaviour
 
     private float _yVelocity;
     private bool _canDoubleJump = false;
-    private bool _isDead = false; // Bloqueo de seguridad
+    private bool _isDead = false;
 
     [Header("Estadísticas y UI")]
     [SerializeField] private int _coins = 0;
@@ -34,45 +34,39 @@ public class Player : MonoBehaviour
     {
         _controller = GetComponent<CharacterController>();
         _photonView = GetComponent<PhotonView>();
+        _audioSource = GetComponent<AudioSource>();
+        if (_audioSource == null) _audioSource = gameObject.AddComponent<AudioSource>();
+
+        var canvas = GameObject.Find("Canvas");
+        if (canvas != null) _uiManager = canvas.GetComponent<UIManager>();
+        _anim = GetComponentInChildren<Animator>();
 
         if (_photonView != null && _photonView.IsMine)
         {
             CamaraSeguimiento scriptCamara = Camera.main.GetComponent<CamaraSeguimiento>();
             if (scriptCamara != null) scriptCamara.objetivo = this.transform;
+
+            if (_uiManager != null)
+            {
+                _uiManager.UpdateLivesDisplay(_lives);
+                _uiManager.UpdateCoinDisplay(_coins);
+            }
         }
         else
         {
             AudioListener listener = GetComponentInChildren<AudioListener>();
             if (listener != null) Destroy(listener);
         }
-
-        _audioSource = GetComponent<AudioSource>();
-        var canvas = GameObject.Find("Canvas");
-        if (canvas != null) _uiManager = canvas.GetComponent<UIManager>();
-
-        if (_playerModel != null) _anim = _playerModel.GetComponent<Animator>();
-        else _anim = GetComponentInChildren<Animator>();
-
-        if (_uiManager != null)
-        {
-            _uiManager.UpdateLivesDisplay(_lives);
-            _uiManager.UpdateCoinDisplay(_coins);
-        }
     }
 
     void Update()
     {
-        // Esto es CLAVE: Solo el dueño calcula movimiento y manda animaciones
         if (_photonView != null && !_photonView.IsMine) return;
-
         if (_isDead) return;
 
         CalculateMovement();
 
-        if (this.transform.position.y <= -8f)
-        {
-            Respawn();
-        }
+        if (this.transform.position.y <= -8f) Respawn();
     }
 
     void CalculateMovement()
@@ -92,28 +86,31 @@ public class Player : MonoBehaviour
         {
             if (_anim != null) _anim.SetBool("estaSaltando", false);
             _yVelocity = -1.0f;
-
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                _yVelocity = _jumpSpeed;
+                Jump();
                 _canDoubleJump = true;
-                if (_anim != null) _anim.SetBool("estaSaltando", true);
-                if (_audioSource != null && _sonidoSalto != null) _audioSource.PlayOneShot(_sonidoSalto);
             }
         }
         else
         {
             if (Input.GetKeyDown(KeyCode.Space) && _canDoubleJump)
             {
-                _yVelocity = _jumpSpeed;
+                Jump();
                 _canDoubleJump = false;
-                if (_audioSource != null && _sonidoSalto != null) _audioSource.PlayOneShot(_sonidoSalto);
             }
             _yVelocity -= _gravity * Time.deltaTime;
         }
 
         velocity.y = _yVelocity;
         _controller.Move(velocity * Time.deltaTime);
+    }
+
+    private void Jump()
+    {
+        _yVelocity = _jumpSpeed;
+        if (_anim != null) _anim.SetBool("estaSaltando", true);
+        if (_audioSource != null && _sonidoSalto != null) _audioSource.PlayOneShot(_sonidoSalto);
     }
 
     public void Respawn()
@@ -133,24 +130,22 @@ public class Player : MonoBehaviour
         else
         {
             _isDead = true;
-            _lives = 0;
             if (_uiManager != null) _uiManager.MostrarGameOver();
-
             _controller.enabled = false;
 
-            // SOLUCIÓN AQUÍ: Desactivar el modelo o el objeto completo
-            if (_playerModel != null)
-                _playerModel.SetActive(false);
-            else
-                this.gameObject.SetActive(false); // Opcional: Desactiva todo el script/objeto
-
-            Debug.Log("Juego Terminado");
+            if (_photonView.IsMine)
+            {
+                // Destrucción inmediata para liberar la red
+                PhotonNetwork.Destroy(this.gameObject);
+            }
         }
     }
 
     public void AddCoin()
     {
-        if (_isDead) return;
+        // Solo sumamos si somos el dueño (independencia de puntaje)
+        if (_isDead || !_photonView.IsMine) return;
+
         _coins++;
         if (_uiManager != null) _uiManager.UpdateCoinDisplay(_coins);
     }

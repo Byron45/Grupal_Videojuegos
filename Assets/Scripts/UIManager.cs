@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement; // NECESARIO PARA REINICIAR
+using Photon.Pun;
 
 public class UIManager : MonoBehaviour
 {
@@ -9,12 +9,12 @@ public class UIManager : MonoBehaviour
 
     public void UpdateCoinDisplay(int coins)
     {
-        _coinText.text = "Coins: " + coins;
+        if (_coinText != null) _coinText.text = "Coins: " + coins;
     }
 
     public void UpdateLivesDisplay(int lives)
     {
-        _livesText.text = "Lives: " + lives;
+        if (_livesText != null) _livesText.text = "Lives: " + lives;
     }
 
     public void MostrarGameOver()
@@ -22,16 +22,21 @@ public class UIManager : MonoBehaviour
         if (_gameOverTexto != null)
         {
             _gameOverTexto.SetActive(true);
-            // Mostramos el cursor para poder hacer clic en el botón
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
     }
 
-    // FUNCIÓN PARA EL BOTÓN
     public void ReiniciarJuego()
     {
-        // Carga la escena actual de nuevo
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        // Si perdemos, salimos de la sala para resetear todo el estado de red
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+        }
+        else
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        }
     }
 }

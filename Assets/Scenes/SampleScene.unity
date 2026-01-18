@@ -1060,7 +1060,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   personajesDisponibles:
-  - {fileID: 603159002204752586, guid: 5b5c71b6b11a6d843b1c00537a781017, type: 3}
+  - {fileID: 3111616081051625155, guid: 5b5c71b6b11a6d843b1c00537a781017, type: 3}
 --- !u!4 &1225883123
 Transform:
   m_ObjectHideFlags: 0
