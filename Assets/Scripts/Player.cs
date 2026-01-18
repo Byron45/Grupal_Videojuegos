@@ -131,10 +131,18 @@ public class Player : MonoBehaviour
         }
         else
         {
-            _isDead = true; // ACTIVAMOS BLOQUEO
+            _isDead = true;
             _lives = 0;
             if (_uiManager != null) _uiManager.MostrarGameOver();
+
             _controller.enabled = false;
+
+            // SOLUCIÓN AQUÍ: Desactivar el modelo o el objeto completo
+            if (_playerModel != null)
+                _playerModel.SetActive(false);
+            else
+                this.gameObject.SetActive(false); // Opcional: Desactiva todo el script/objeto
+
             Debug.Log("Juego Terminado");
         }
     }
